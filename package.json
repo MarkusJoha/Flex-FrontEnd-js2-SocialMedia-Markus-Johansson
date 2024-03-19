@@ -13,5 +13,8 @@
   "devDependencies": {
     "del-cli": "^5.1.0",
     "parcel": "^2.12.0"
+  },
+  "dependencies": {
+    "firebase": "^10.9.0"
   }
 }

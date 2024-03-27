@@ -5,6 +5,9 @@ const fullName = document.getElementById('registration-name');
 const password = document.getElementById('registration-password');
 const registerButton = document.getElementById('register-button');
 const images = document.querySelectorAll('input[name="profile-image"]');
+const date = {
+    "date": new Date().toLocaleString()
+}
 
 registerButton.onclick = async function (event) {
 

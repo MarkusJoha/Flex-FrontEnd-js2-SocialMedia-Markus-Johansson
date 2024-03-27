@@ -1,6 +1,6 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
-import { getDatabase, ref, child, get } from "firebase/database";
+import { getDatabase, ref, child, get, push, set } from "firebase/database";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -29,6 +29,15 @@ export async function getDb() {
       }
   } catch (error) {
       throw error;
+  }
+}
+
+export async function addUserToDb(username, userData) {
+  try {
+    await set(ref(database, `users/${username}`), userData);
+    console.log("User added successfully to the database.");
+  } catch (error) {
+    throw error;
   }
 }
 

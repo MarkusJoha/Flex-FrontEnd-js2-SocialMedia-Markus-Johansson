@@ -10,8 +10,8 @@ const date = {
     "date": new Date().toLocaleString()
 }
 
-registerButton.onclick = async function (event) {
-    event.preventDefault();
+registerButton.addEventListener('click', async e => {
+    e.preventDefault();
 
     let selectedImageSrc = '';
     radioButtons.forEach(image => {
@@ -40,4 +40,4 @@ registerButton.onclick = async function (event) {
     } catch (error) {
         console.error(error);
     }
-};
+});

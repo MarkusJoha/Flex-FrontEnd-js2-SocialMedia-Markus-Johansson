@@ -1,9 +1,15 @@
-import { getDb } from "./database";
+import { loginUser } from "./database";
 
-const email = document.getElementById('login-email');
-const password = document.getElementById('login-password');
+const usernameEl = document.getElementById('login-username');
+const passwordEl = document.getElementById('login-password');
 const loginButton = document.getElementById('login-button');
 
-loginButton.onclick = async function (event) {
-    event.preventDefault();
-}
+loginButton.addEventListener('click', async e => {
+    e.preventDefault();
+
+    const username = usernameEl.value;
+    const password = passwordEl.value;
+    const LoggedInUser = await loginUser(username, password);
+    console.log(LoggedInUser);
+
+});

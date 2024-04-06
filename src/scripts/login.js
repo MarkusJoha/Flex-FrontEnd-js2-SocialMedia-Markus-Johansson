@@ -1,4 +1,4 @@
-import { loginUser } from "./database";
+const { loginUser } = require('./database');
 
 const usernameEl = document.getElementById('login-username');
 const passwordEl = document.getElementById('login-password');
@@ -9,7 +9,16 @@ loginButton.addEventListener('click', async e => {
 
     const username = usernameEl.value;
     const password = passwordEl.value;
-    const LoggedInUser = await loginUser(username, password);
-    console.log(LoggedInUser);
-
+    
+    try {
+        const isLoggedIn = await loginUser(username, password);
+        
+        if (isLoggedIn) {
+            fetch('/login-success', { method: 'POST' });
+        } else {
+            console.log("Incorrect username or password.");
+        }
+    } catch (error) {
+        console.error("Error logging in:", error);
+    }
 });

@@ -17,11 +17,11 @@
     </header>
     
     <div id="login-container">
-        <form id="login-form">
+        <form id="login-form" action="/login-success" method="POST">
             <label for="login-username">Username:</label>
-            <input type="text" id="login-username" required>
+            <input type="text" id="login-username" name="loginUsername" required>
             <label for="login-password">Password:</label>
-            <input type="password" id="login-password" required>
+            <input type="password" id="login-password" name="loginPassword" required>
             <button id="login-button">Login!</button>
         </form>
         <p>Don't have an account? <a href="./registrationpage.html" id="login-registerpage-link">Register here.</a></p>

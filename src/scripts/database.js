@@ -1,6 +1,6 @@
 // Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
-import { getDatabase, ref, child, get, push, set } from "firebase/database";
+const { initializeApp } = require('firebase/app');
+const { getDatabase, ref, child, get, push, set } = require('firebase/database');
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -20,7 +20,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const database = getDatabase(app);
 
-export async function loginUser(username, password) {
+async function loginUser(username, password) {
   try {
     const res = await fetch(baseUrl + `${username}.json`);
     const data = await res.json();
@@ -42,7 +42,7 @@ export async function loginUser(username, password) {
   }
 }
 
-export async function addUserToDb(username, userData) {
+async function addUserToDb(username, userData) {
   try {
     await set(ref(database, `users/${username}`), userData);
     console.log("User added successfully to the database.");
@@ -51,4 +51,4 @@ export async function addUserToDb(username, userData) {
   }
 }
 
-
+module.exports = { loginUser, addUserToDb }

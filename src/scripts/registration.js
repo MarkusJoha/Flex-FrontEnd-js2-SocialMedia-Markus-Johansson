@@ -1,4 +1,4 @@
-import { addUserToDb } from "./database";
+const { addUserToDb } = ('./database');
 
 const email = document.getElementById('registration-email');
 const username = document.getElementById('registration-username');
@@ -27,13 +27,11 @@ registerButton.addEventListener('click', async e => {
     console.log('Profile Image: ', selectedImageSrc);
 
     try {
-        // Add user data to the database
         await addUserToDb(username.value, {
             fullname: fullName.value,
             email: email.value,
             password: password.value,
             profileimage: selectedImageSrc
-            // Add other user data as needed
         });
 
         console.log('User added successfully to the database.');

@@ -16,9 +16,9 @@ app.get('/', (req, res) => {
 });
 
 app.post('/login-success', (req, res) => {
-    const logggedIn = loginUser(req.body.loginUsername, req.body.loginPassword);
+    const loggedIn = loginUser(req.body.loginUsername, req.body.loginPassword);
 
-    if (logggedIn) {
+    if (loggedIn) {
         console.log(req.body.loginUsername);
         console.log(req.body.loginPassword);
         res.sendFile(path.join(__dirname, 'src', 'views', 'homepage.html'));
@@ -26,7 +26,6 @@ app.post('/login-success', (req, res) => {
 });
 
 app.get('/login', (req, res) => {
-    console.log(PORT);
     res.sendFile(path.join(__dirname, 'src', 'views', 'loginpage.html'));
 });
 

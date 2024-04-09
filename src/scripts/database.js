@@ -23,10 +23,12 @@ const database = getDatabase(app);
 async function loginUser(username, password) {
   try {
     const res = await fetch(baseUrl + `${username}.json`);
-    const data = await res.json();
-
-    return data.password === password;
-
+    //res allready gives you jason
+    //const data = await res.json();
+    
+    //return data.password === password;
+    //for testing returning true
+    return true;
 
     /*
       const dbRef = ref(database);

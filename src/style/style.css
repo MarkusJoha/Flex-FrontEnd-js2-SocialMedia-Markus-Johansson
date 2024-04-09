@@ -1,3 +1,7 @@
+header > a {
+    margin: 5px;
+}
+
 #header-link {
     text-decoration: none;
     color: white;

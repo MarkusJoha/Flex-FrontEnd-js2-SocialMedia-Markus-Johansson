@@ -4,6 +4,7 @@
   "description": "",
   "scripts": {
     "dev": "node server.js",
+    "devmon": "nodemon server.js",
     "build": "parcel build ./src/index.html --dist-dir docs --public-url ./",
     "clean": "del-cli ./.parcel-cache ./docs ./dist"
   },

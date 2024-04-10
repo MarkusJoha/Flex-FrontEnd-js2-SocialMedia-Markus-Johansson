@@ -23,22 +23,12 @@ const database = getDatabase(app);
 async function loginUser(username, password) {
   try {
     const res = await fetch(baseUrl + `${username}.json`);
-    //res allready gives you jason
-    //const data = await res.json();
-    
-    //return data.password === password;
-    //for testing returning true
-    return true;
+    const data = await res.json();
 
-    /*
-      const dbRef = ref(database);
-      const snapshot = await get(child(dbRef, `users/${username}`));
-      if (snapshot.exists()) {
-          return snapshot.val();
-      } else {
-          throw new Error("No data available");
-      }
-      */
+    if (data) {
+      return data.password === password;
+    }
+    return null;
   } catch (error) {
     throw error;
   }

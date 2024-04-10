@@ -1,13 +1,12 @@
 const express = require('express');
 const path = require('path');
-const bodyParser = require('body-parser');
 const { loginUser } = require('./src/scripts/database');
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = 3000;
 
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json());
+app.use(express.urlencoded({ extended: false }));
+app.use(express.json());
 
 app.use(express.static(path.join(__dirname, 'src')));
 
@@ -15,14 +14,18 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'src', 'views', 'loginpage.html'));
 });
 
-app.post('/login-success', (req, res) => {
-    const loggedIn = loginUser(req.body.loginUsername, req.body.loginPassword);
+app.post('/login-attempt', async (req, res) => {
+    const username = req.body.username;
+    const password = req.body.password;
+
+    const loggedIn = await loginUser(username, password);
 
     if (loggedIn) {
-        console.log(req.body.loginUsername);
-        console.log(req.body.loginPassword);
-        res.sendFile(path.join(__dirname, 'src', 'views', 'homepage.html'));
+        res.send({ username });
+    } else {
+        res.send({ username: null });
     }
+
 });
 
 app.get('/login', (req, res) => {

@@ -1,6 +1,6 @@
 const express = require('express');
 const path = require('path');
-const { loginUser } = require('./src/scripts/database');
+const { loginUser, addUserToDb } = require('./src/scripts/database');
 
 const app = express();
 const PORT = 3000;
@@ -28,7 +28,34 @@ app.post('/login-attempt', async (req, res) => {
 
 });
 
-app.get('/login', (req, res) => {
+app.get('/get-users', async (req, res) => {
+
+});
+
+app.post('/register-user', async (req, res) => {
+    console.log(req.body);
+    const userData = { 
+            fullName: req.body.userData.fullName,
+            email: req.body.userData.email,
+            password: req.body.userData.password,
+            profileImage: req.body.userData.profileImage
+    }
+    console.log(userData);
+
+    const registerUser = await addUserToDb(req.body.userData.username ,userData);
+
+    console.log(registerUser);
+
+    if (registerUser) {
+        res.send({userCreated: true})
+    } else {
+        res.send({userCreated: false})
+    }
+
+});
+
+app.post('/login', (req, res) => {
+
     res.sendFile(path.join(__dirname, 'src', 'views', 'loginpage.html'));
 });
 

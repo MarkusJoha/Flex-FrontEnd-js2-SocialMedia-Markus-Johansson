@@ -30,7 +30,7 @@ formEl.addEventListener("submit", async e => {
             console.log(data);
             window.location.replace('homepage'); 
         } else {
-            console.error("Failed to login! Wrong credentials");
+            alert("Failed to login! Wrong credentials");
         }
     } else {
         console.error('Failed to login:', response.status);

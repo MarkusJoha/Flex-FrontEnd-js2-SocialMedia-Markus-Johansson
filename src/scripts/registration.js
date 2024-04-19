@@ -20,22 +20,27 @@ registerButton.addEventListener('click', async e => {
         }
     });
 
-    console.log('Email: ', email.value);
-    console.log('Username: ', username.value);
-    console.log('Name: ', fullName.value);
-    console.log('Password: ', password.value);
-    console.log('Profile Image: ', selectedImageSrc);
+    const userData = {
+        username: username.value,
+        fullName: fullName.value,
+        email: email.value,
+        password: password.value,
+        profileImage: selectedImageSrc
+    }
 
-    try {
-        await addUserToDb(username.value, {
-            fullname: fullName.value,
-            email: email.value,
-            password: password.value,
-            profileimage: selectedImageSrc
-        });
+    const response = await fetch("/register-user", {
+        method: "POST",
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({userData})
+    });
 
-        console.log('User added successfully to the database.');
-    } catch (error) {
-        console.error(error);
+    const data = await response.json();
+    console.log(data);
+
+    if (data.userCreated) {
+        alert('User Created!');
+        window.location.replace('loginpage');
     }
 });

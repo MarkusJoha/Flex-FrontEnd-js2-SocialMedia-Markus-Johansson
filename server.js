@@ -1,6 +1,6 @@
 const express = require('express');
 const path = require('path');
-const { loginUser, addUserToDb } = require('./src/scripts/database');
+const { loginUser, addUserToDb, getAllUsers } = require('./src/scripts/database');
 
 const app = express();
 const PORT = 3000;
@@ -12,6 +12,18 @@ app.use(express.static(path.join(__dirname, 'src')));
 
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'src', 'views', 'loginpage.html'));
+});
+
+app.get('/register', (req, res) => {
+    res.sendFile(path.join(__dirname, 'src', 'views', 'registrationpage.html'));
+});
+
+app.get('/loginpage', (req, res) => {
+    res.sendFile(path.join(__dirname, 'src', 'views', 'loginpage.html'));
+});
+
+app.get('/homepage', async (req, res) => {
+    res.sendFile(path.join(__dirname, 'src', 'views', 'homepage.html'));
 });
 
 app.post('/login-attempt', async (req, res) => {
@@ -28,48 +40,36 @@ app.post('/login-attempt', async (req, res) => {
 
 });
 
-app.get('/get-users', async (req, res) => {
-
-});
-
 app.post('/register-user', async (req, res) => {
-    console.log(req.body);
-    const userData = { 
-            fullName: req.body.userData.fullName,
-            email: req.body.userData.email,
-            password: req.body.userData.password,
-            profileImage: req.body.userData.profileImage
+    const username = req.body.userData.username;
+    const userData = {
+        fullName: req.body.userData.fullName,
+        email: req.body.userData.email,
+        password: req.body.userData.password,
+        profileImage: req.body.userData.profileImage
     }
     console.log(userData);
 
-    const registerUser = await addUserToDb(req.body.userData.username ,userData);
+    const registerUser = await addUserToDb(username, userData);
 
     console.log(registerUser);
 
     if (registerUser) {
-        res.send({userCreated: true})
+        res.send({ userCreated: true })
     } else {
-        res.send({userCreated: false})
+        res.send({ userCreated: false })
     }
 
 });
 
-app.post('/login', (req, res) => {
-
-    res.sendFile(path.join(__dirname, 'src', 'views', 'loginpage.html'));
+app.get('/get-users', async (req, res) => {
+    const userInfo = await getAllUsers();
+    res.json(userInfo);
+    console.log(userInfo);
 });
 
-app.post('/homepage', (req, res) => {
-    console.log(req.body.loginUsername);
-    res.sendFile(path.join(__dirname, 'src', 'views', 'homepage.html'));
-});
+app.get('/get-posts', async (req, res) => {
 
-app.get('/homepage', (req, res) => {
-    res.sendFile(path.join(__dirname, 'src', 'views', 'homepage.html'));
-});
-
-app.get('/register', (req, res) => {
-    res.sendFile(path.join(__dirname, 'src', 'views', 'registrationpage.html'));
 });
 
 app.listen(PORT, () => {

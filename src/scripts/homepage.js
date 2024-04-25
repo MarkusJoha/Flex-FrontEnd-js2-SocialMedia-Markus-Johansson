@@ -1,8 +1,12 @@
-const h1 = document.querySelector('h1');
+async function getUserData() {
 
-const username = localStorage.getItem("username");
-console.log(username);
+    try {
+        const response = await fetch("/get-users");
 
-if (username) {
-    h1.textContent = "Hej! " + username;
+        const data = await response.json();
+        console.log(data);
+    } catch (error) {
+        console.log(error);
+    }
 }
+getUserData();

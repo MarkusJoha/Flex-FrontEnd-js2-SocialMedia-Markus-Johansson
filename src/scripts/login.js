@@ -3,7 +3,7 @@ const passwordEl = document.getElementById('login-password');
 const formEl = document.getElementById("login-form");
 
 const username = localStorage.getItem("username");
-console.log(username);
+//console.log(username);
 
 formEl.addEventListener("submit", async e => {
     e.preventDefault();
@@ -20,8 +20,6 @@ formEl.addEventListener("submit", async e => {
         },
         body: JSON.stringify(cred)
     });
-
-    console.log(response);
 
     if (response.ok) {
         const data = await response.json();

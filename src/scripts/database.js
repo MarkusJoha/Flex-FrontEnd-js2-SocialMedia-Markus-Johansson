@@ -26,13 +26,14 @@ async function addUserToDb(username, userData) {
   });
 
   const data = await addUser.json();
-  console.log(data);
+  return data;
 }
 
 async function getAllUsers() {
-const data = await fetch(baseUrl + '.json',  {
-    
-});
+  const response = await fetch(baseUrl + `.json`);
+  const data = await response.json();
+
+  return data;
 }
 
-module.exports = { loginUser, addUserToDb }
+module.exports = { loginUser, addUserToDb, getAllUsers }

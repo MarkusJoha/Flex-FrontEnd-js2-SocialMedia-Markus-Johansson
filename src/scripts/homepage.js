@@ -31,7 +31,7 @@ async function getLoggedInUser() {
         const response = await fetch('/get-loggedin-user');
         const data = await response.json();
 
-        console.log("getLoggedInUser: ", data);
+        greeting.innerText = `Hej, ${data.username}!`;
     } catch (error) {
         console.error(error);
     }

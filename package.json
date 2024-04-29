@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "dev": "node server.js",
-    "devmon": "nodemon server.js",
+    "start": "node server.js",
+    "dev": "nodemon server.js",
     "build": "parcel build ./src/index.html --dist-dir docs --public-url ./",
     "clean": "del-cli ./.parcel-cache ./docs ./dist"
   },

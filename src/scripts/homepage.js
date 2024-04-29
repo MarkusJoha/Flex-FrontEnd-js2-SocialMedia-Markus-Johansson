@@ -1,4 +1,5 @@
 const greeting = document.getElementById('welcome-message');
+const logoutBtn = document.getElementById('logout-button');
 
 async function getUserData() {
 
@@ -36,3 +37,15 @@ async function getLoggedInUser() {
     }
 }
 getLoggedInUser();
+
+logoutBtn.addEventListener('click', async () => {
+    const response = await fetch('/logout', {
+        method: 'POST',
+    });
+    const data = await response.json();
+    if (data.success) {
+        window.location.href = '/loginpage';
+    } else {
+        alert('Logout failed. Please try again.');
+    }
+});

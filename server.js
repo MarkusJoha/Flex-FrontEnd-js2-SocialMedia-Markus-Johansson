@@ -108,6 +108,18 @@ app.get('/get-posts', async (req, res) => {
     //console.log(postInfo);
 });
 
+app.post('/logout', (req, res) => {
+    // Destroy the session
+    req.session.destroy((err) => {
+        if (err) {
+            console.error('Error destroying session:', err);
+            res.json({ success: false });
+        } else {
+            res.json({ success: true });
+        }
+    });
+});
+
 app.listen(PORT, () => {
     console.log(`Server is running on port http://localhost:${PORT}`);
 });

@@ -2,9 +2,6 @@ const usernameEl = document.getElementById('login-username');
 const passwordEl = document.getElementById('login-password');
 const formEl = document.getElementById("login-form");
 
-const username = localStorage.getItem("username");
-//console.log(username);
-
 formEl.addEventListener("submit", async e => {
     e.preventDefault();
 
@@ -24,7 +21,6 @@ formEl.addEventListener("submit", async e => {
     if (response.ok) {
         const data = await response.json();
         if (data.username) {
-            localStorage.setItem("username", data.username);
             console.log(data);
             window.location.replace('homepage'); 
         } else {

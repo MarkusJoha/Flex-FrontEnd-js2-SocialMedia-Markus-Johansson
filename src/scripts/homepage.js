@@ -4,7 +4,6 @@ const timelineDiv = document.getElementById('timeline');
 
 async function fetchData() {
     try {
-        // Fetch user data and post data together
         const [userDataResponse, postDataResponse] = await Promise.all([
             fetch("/get-users"),
             fetch("/get-posts")
@@ -16,7 +15,6 @@ async function fetchData() {
         console.log("getUserData: ", userData);
         console.log("getPostData: ", postData);
 
-        // After fetching both data, render posts
         renderPosts(userData, postData);
     } catch (error) {
         console.error(error);
@@ -49,10 +47,13 @@ async function logout() {
     }
 }
 
-function renderPosts(userData, postData) {
-    timelineDiv.innerHTML = ''; // Clear previous content
+function renderUsers(userData) {
+    
+}
 
-    // Loop through each user's posts
+function renderPosts(postData) {
+    timelineDiv.innerHTML = '';
+
     for (const username in postData) {
         const userPosts = postData[username];
         const sortedPosts = Object.values(userPosts).sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
@@ -61,24 +62,18 @@ function renderPosts(userData, postData) {
             const postDiv = document.createElement('div');
             postDiv.classList.add('post');
 
-            // Use user data to get additional information for the post card
-            const userInfo = userData[post.username];
-            if (userInfo) {
-                const userLink = document.createElement('a');
-                userLink.href = `/profile/${post.username}`; // Assuming the URL structure for user profiles
-                userLink.textContent = userInfo.name; // Assuming user data has a 'name' property
-                postDiv.appendChild(userLink);
+            const postOwnerUsername = Object.keys(postData).find(key => postData[key] === userPosts);
 
-                const postAuthor = document.createElement('span');
-                postAuthor.textContent = ` (${userInfo.username})`; // Display username after the name
-                postDiv.appendChild(postAuthor);
-            }
+            const userLink = document.createElement('a');
+            userLink.href = `/profile/${postOwnerUsername}`; // Assuming the URL structure for user profiles
+            userLink.textContent = postOwnerUsername; // Display username as post owner
+            postDiv.appendChild(userLink);
+            
 
             const postContent = document.createElement('p');
             postContent.textContent = post.content;
             postDiv.appendChild(postContent);
 
-            // Display post creation date
             const postDate = document.createElement('span');
             postDate.textContent = `Posted on: ${formatDate(post.created_at)}`;
             postDiv.appendChild(postDate);
@@ -96,7 +91,6 @@ function renderPosts(userData, postData) {
                 commentContent.textContent = comment.content;
                 commentDiv.appendChild(commentContent);
 
-                // Display comment creation date
                 const commentDate = document.createElement('span');
                 commentDate.textContent = `Commented on: ${formatDate(comment.created_at)}`;
                 commentDiv.appendChild(commentDate);
@@ -111,13 +105,11 @@ function renderPosts(userData, postData) {
 
             postDiv.appendChild(commentsDiv);
 
-            // Add input field for new comment
             const newCommentInput = document.createElement('input');
             newCommentInput.setAttribute('type', 'text');
             newCommentInput.setAttribute('placeholder', 'Write your comment...');
             postDiv.appendChild(newCommentInput);
 
-            // Add button to submit new comment
             const submitCommentBtn = document.createElement('button');
             submitCommentBtn.textContent = 'Add Comment';
             submitCommentBtn.addEventListener('click', async () => {
@@ -139,7 +131,6 @@ function renderPosts(userData, postData) {
                         // Optionally, you can update the UI to reflect the new comment
                     } catch (error) {
                         console.error(error);
-                        // Handle errors if any
                     }
                 } else {
                     alert('Please enter a comment');
@@ -152,16 +143,11 @@ function renderPosts(userData, postData) {
     }
 }
 
-
-
-// Function to format date
 function formatDate(dateString) {
     const date = new Date(dateString);
     return date.toLocaleString();
 }
 
-
-// Fetch data and initialize UI
 fetchData();
 getLoggedInUser();
 

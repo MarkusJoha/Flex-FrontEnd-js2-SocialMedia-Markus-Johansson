@@ -47,28 +47,25 @@ async function logout() {
     }
 }
 
-function renderUsers(userData) {
-    
-}
-
-function renderPosts(postData) {
+function renderPosts(userData, postData) {
     timelineDiv.innerHTML = '';
 
     for (const username in postData) {
         const userPosts = postData[username];
         const sortedPosts = Object.values(userPosts).sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
 
-        for (const post of sortedPosts) {
+        for (const postId in userPosts) {
+            const post = userPosts[postId];
+
             const postDiv = document.createElement('div');
             postDiv.classList.add('post');
 
-            const postOwnerUsername = Object.keys(postData).find(key => postData[key] === userPosts);
+            const postOwnerUsername = username;
 
             const userLink = document.createElement('a');
             userLink.href = `/profile/${postOwnerUsername}`; // Assuming the URL structure for user profiles
             userLink.textContent = postOwnerUsername; // Display username as post owner
             postDiv.appendChild(userLink);
-            
 
             const postContent = document.createElement('p');
             postContent.textContent = post.content;
@@ -81,26 +78,30 @@ function renderPosts(postData) {
             const commentsDiv = document.createElement('div');
             commentsDiv.classList.add('comments');
 
-            const sortedComments = Object.values(post.comments).sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+            if (post.comments) {
+                const sortedComments = Object.values(post.comments).sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
 
-            for (const comment of sortedComments) {
-                const commentDiv = document.createElement('div');
-                commentDiv.classList.add('comment');
+                for (const commentId in post.comments) {
+                    const comment = post.comments[commentId];
 
-                const commentContent = document.createElement('p');
-                commentContent.textContent = comment.content;
-                commentDiv.appendChild(commentContent);
+                    const commentDiv = document.createElement('div');
+                    commentDiv.classList.add('comment');
 
-                const commentDate = document.createElement('span');
-                commentDate.textContent = `Commented on: ${formatDate(comment.created_at)}`;
-                commentDiv.appendChild(commentDate);
+                    const commentContent = document.createElement('p');
+                    commentContent.textContent = comment.content;
+                    commentDiv.appendChild(commentContent);
 
-                const commenterLink = document.createElement('a');
-                commenterLink.href = `/profile/${comment.user}`; // Assuming the URL structure for user profiles
-                commenterLink.textContent = comment.user;
-                commentDiv.appendChild(commenterLink);
+                    const commentDate = document.createElement('span');
+                    commentDate.textContent = `Commented on: ${formatDate(comment.created_at)}`;
+                    commentDiv.appendChild(commentDate);
 
-                commentsDiv.appendChild(commentDiv);
+                    const commenterLink = document.createElement('a');
+                    commenterLink.href = `/profile/${comment.user}`; // Assuming the URL structure for user profiles
+                    commenterLink.textContent = comment.user;
+                    commentDiv.appendChild(commenterLink);
+
+                    commentsDiv.appendChild(commentDiv);
+                }
             }
 
             postDiv.appendChild(commentsDiv);
@@ -122,7 +123,7 @@ function renderPosts(postData) {
                                 'Content-Type': 'application/json'
                             },
                             body: JSON.stringify({
-                                postId: post.id, // Assuming each post has an id
+                                postId: postId, // Use postId instead of post.id
                                 content: newCommentContent
                             })
                         });
@@ -147,6 +148,7 @@ function formatDate(dateString) {
     const date = new Date(dateString);
     return date.toLocaleString();
 }
+
 
 fetchData();
 getLoggedInUser();

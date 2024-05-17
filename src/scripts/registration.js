@@ -43,4 +43,7 @@ registerButton.addEventListener('click', async e => {
         alert('User Created!');
         window.location.replace('loginpage');
     }
+    else {
+        alert('Error creating user! (User probably already exists).');
+    }
 });

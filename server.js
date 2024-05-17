@@ -1,7 +1,8 @@
 const express = require('express');
 const session = require('express-session');
 const path = require('path');
-const { loginUser, addUserToDb, getAllUsers, getAllPosts } = require('./src/scripts/database');
+const { loginUser, addUser, addPost, addComment, getAllUsers, getAllPosts, getUser, getUserPassword, getUserPosts, deleteUser } = require('./database');
+const filePath = path.join(__dirname, 'src', 'views');
 
 const app = express();
 const PORT = 3000;
@@ -15,7 +16,7 @@ app.use(session({
     secret: 'your-secret-key',
     resave: false,
     saveUninitialized: true,
-    cookie: { secure: false}
+    cookie: { secure: false }
 }));
 
 function requireLogin(req, res, next) {
@@ -27,30 +28,40 @@ function requireLogin(req, res, next) {
     }
 }
 
+function destroySession(session, res) {
+    session.destroy((err) => {
+        if (err) {
+            console.error('Error destroying session:', err);
+            res.json({ success: false });
+        } else {
+            res.json({ success: true });
+        }
+    });
+}
+
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'src', 'views', 'loginpage.html'));
+    res.sendFile(path.join(filePath, 'loginpage.html'));
 });
 
 app.get('/register', (req, res) => {
-    res.sendFile(path.join(__dirname, 'src', 'views', 'registrationpage.html'));
+    res.sendFile(path.join(filePath, 'registrationpage.html'));
 });
 
 app.get('/loginpage', (req, res) => {
-    res.sendFile(path.join(__dirname, 'src', 'views', 'loginpage.html'));
+    res.sendFile(path.join(filePath, 'loginpage.html'));
 });
 
 app.get('/homepage', requireLogin, async (req, res) => {
-    res.sendFile(path.join(__dirname, 'src', 'views', 'homepage.html'));
+    res.sendFile(path.join(filePath, 'homepage.html'));
 });
 
 app.get('/profilepage', requireLogin, async (req, res) => {
-    res.sendFile(path.join(__dirname, 'src', 'views', 'profilepage.html'));
+    res.sendFile(path.join(filePath, 'profilepage.html'));
 });
 
 app.post('/login-attempt', async (req, res) => {
     try {
-        const username = req.body.username;
-        const password = req.body.password;
+        const { username, password } = req.body;
 
         const loggedIn = await loginUser(username, password);
 
@@ -69,15 +80,15 @@ app.post('/login-attempt', async (req, res) => {
 app.post('/register-user', async (req, res) => {
 
     try {
-        const username = req.body.userData.username;
+        const { username, fullName, email, password, profileImage } = req.body.userData;
         const userData = {
-            fullName: req.body.userData.fullName,
-            email: req.body.userData.email,
-            password: req.body.userData.password,
-            profileImage: req.body.userData.profileImage
+            fullName,
+            email,
+            password,
+            profileImage
         }
 
-        const registerUser = await addUserToDb(username, userData);
+        const registerUser = await addUser(username, userData);
 
         if (registerUser) {
             res.send({ userCreated: true });
@@ -109,15 +120,22 @@ app.get('/get-posts', async (req, res) => {
 });
 
 app.post('/logout', (req, res) => {
-    // Destroy the session
-    req.session.destroy((err) => {
-        if (err) {
-            console.error('Error destroying session:', err);
-            res.json({ success: false });
-        } else {
-            res.json({ success: true });
-        }
-    });
+    destroySession(req.session, res);
+});
+
+app.delete('/delete-user', async (req, res) => {
+    const { password, username } = req.body;
+    const userPassword = await getUserPassword();
+
+    if (userPassword === password) {
+        destroySession(req.session, res);
+        deleteUser(username);
+
+        res.json(true);
+    }
+    else {
+        res.json(null);
+    }
 });
 
 app.listen(PORT, () => {

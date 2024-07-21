@@ -15,16 +15,21 @@
 
     <header class="bg-dark text-white py-3 text-center">
         <a href="/homepage" id="header" class="h3">HomePage</a>
+        <div id="button-div">
+            <button id="logout-button" class="header-buttons">Logout</button>
+            <button id="delete-account-button" class="header-buttons">Delete Account</button>
+        </div>
     </header>
-    
-    <h1 id="welcome-message"></h1>
+    <div class="welcome-div">
+        <h1 id="welcome-message"></h1>
+        <form id="post-submission-form">
+            <input type="text" id="post-submission-input" placeholder="What's on your mind?" required>
+            <button id="post-submission-button">Post!</button>
+        </form>
+    </div>
     <div id="profile-links"></div>
     <div id="content-div">
         <div id="timeline"></div>
-    </div>
-    <div id="user-div">
-        <button id="logout-button">Logout</button>
-        <button id="delete-account-button">Delete Account</button>
     </div>
 </body>
 

@@ -16,7 +16,7 @@ async function fetchData() {
         console.log("getUserData: ", userData);
         console.log("getPostData: ", postData);
 
-        renderPosts(userData, postData);
+        displayPosts(postData)
     } catch (error) {
         console.error(error);
     }
@@ -27,8 +27,8 @@ async function getLoggedInUser() {
         const response = await fetch('/get-loggedin-user');
         const data = await response.json();
         user = data.username;
-        greeting.innerText = `Hej, ${user}!`;
-        
+        greeting.innerText = `Greetings, ${user}!`;
+        console.log(user);
     } catch (error) {
         console.error(error);
     }
@@ -57,6 +57,74 @@ function deleteUser() {
 function formatDate(dateString) {
     const date = new Date(dateString);
     return date.toLocaleString();
+}
+
+function createPostElement(user, post, timestamp) {
+    const postElement = document.createElement('div');
+    postElement.className = 'post';
+
+    const postContent = document.createElement('p');
+    postContent.textContent = `${user} (${timestamp}): ${post.content}`;
+    postElement.appendChild(postContent);
+
+    if (post.comments) {
+        const sortedComments = Object.values(post.comments).sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+        for (const comment of sortedComments) {
+            const commentElement = createCommentElement(comment);
+            postElement.appendChild(commentElement);
+        }
+    }
+
+    const commentForm = document.createElement('form');
+    commentForm.className = 'comment-form';
+    commentForm.innerHTML = `
+        <input type="text" name="comment" placeholder="Write a comment..." required>
+        <button type="submit">Post Comment</button>
+    `;
+    commentForm.addEventListener('submit', function(event) {
+        event.preventDefault();
+        const commentContent = event.target.comment.value;
+        if (commentContent) {
+            postComment(user, post, commentContent, postElement);
+            event.target.reset();
+        }
+    });
+    postElement.appendChild(commentForm);
+
+    return postElement;
+}
+
+function createCommentElement(comment) {
+    const commentElement = document.createElement('div');
+    commentElement.className = 'comment';
+
+    const commentContent = document.createElement('p');
+    commentContent.textContent = `${comment.user} (${formatDate(comment.created_at)}): ${comment.content}`;
+    commentElement.appendChild(commentContent);
+
+    return commentElement;
+}
+
+function displayPosts(postData) {
+    const postsArray = [];
+
+    for (const user in postData) {
+        for (const postId in postData[user]) {
+            const post = postData[user][postId];
+            postsArray.push({
+                user: user,
+                post: post,
+                created_at: post.created_at
+            });
+        }
+    }
+
+    postsArray.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+
+    for (const postObject of postsArray) {
+        const postElement = createPostElement(postObject.user, postObject.post, formatDate(postObject.created_at));
+        timelineDiv.appendChild(postElement);
+    }
 }
 
 

@@ -115,13 +115,12 @@ async function getAllUsers() {
 
 async function getUser(username) {
   try {
-    const response = await fetch(`${baseUrl}users/${username}.json`);
-    const data = await response.json();
-
-    return data;
+      const response = await fetch(`${baseUrl}users/${username}.json`);
+      const data = await response.json();
+      return data;
   } catch (error) {
-    console.error(error);
-    return null;
+      console.error('Error fetching user data:', error);
+      return null;
   }
 }
 

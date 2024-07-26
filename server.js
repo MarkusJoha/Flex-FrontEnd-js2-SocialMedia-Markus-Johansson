@@ -55,8 +55,25 @@ app.get('/homepage', requireLogin, async (req, res) => {
     res.sendFile(path.join(filePath, 'homepage.html'));
 });
 
-app.get('/profilepage', requireLogin, async (req, res) => {
+app.get('/profilepage', requireLogin, (req, res) => {
     res.sendFile(path.join(filePath, 'profilepage.html'));
+});
+
+app.get('/api/user/:username', async (req, res) => {
+    const username = req.params.username;
+
+    try {
+        const userData = await getUser(username);
+        console.log(`Fetched user data for ${username}:`, userData); // Debugging log
+
+        if (!userData) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+        res.json(userData);
+    } catch (error) {
+        console.error('Error fetching user data:', error);
+        res.status(500).json({ error: 'Server error' });
+    }
 });
 
 app.post('/login-attempt', async (req, res) => {

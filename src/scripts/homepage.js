@@ -1,7 +1,7 @@
 const greeting = document.getElementById('welcome-message');
 const logoutBtn = document.getElementById('logout-button');
-const deleteBtn = document.getElementById('')
 const timelineDiv = document.getElementById('timeline');
+const userLinksDiv = document.getElementById('profile-links');
 let user;
 
 async function fetchData() {
@@ -11,12 +11,16 @@ async function fetchData() {
             fetch("/get-posts")
         ]);
 
-        const [userData, postData] = [await userDataResponse.json(), await postDataResponse.json()];
+        const [userData, postData] = await Promise.all([
+            userDataResponse.json(),
+            postDataResponse.json()
+        ]);
 
         console.log("getUserData: ", userData);
         console.log("getPostData: ", postData);
 
-        displayPosts(postData)
+        displayUserLinks(userData);
+        displayPosts(postData);
     } catch (error) {
         console.error(error);
     }
@@ -51,7 +55,7 @@ async function logout() {
 }
 
 function deleteUser() {
-    
+    // Implement delete user functionality if needed
 }
 
 function formatDate(dateString) {
@@ -127,6 +131,15 @@ function displayPosts(postData) {
     }
 }
 
+function displayUserLinks(userData) {
+    for (const username in userData) {
+        const userLink = document.createElement('a');
+        userLink.href = `/profilepage?username=${encodeURIComponent(username)}`;
+        userLink.textContent = username;
+        userLink.style.display = 'block'; // Add some basic styling
+        userLinksDiv.appendChild(userLink);
+    }
+}
 
 fetchData();
 getLoggedInUser();

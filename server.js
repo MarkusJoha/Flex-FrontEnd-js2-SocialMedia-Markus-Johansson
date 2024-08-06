@@ -1,7 +1,11 @@
 const express = require('express');
 const session = require('express-session');
 const path = require('path');
-const { loginUser, addUser, addPost, addComment, getAllUsers, getAllPosts, getUser, getUserPassword, getUserPosts, deleteUser } = require('./database');
+const {
+    loginUser, addUser, addPost, addComment,
+    getAllUsers, getAllPosts, getUser,
+    getUserPassword, getUserPosts, deleteUser
+} = require('./database');
 const filePath = path.join(__dirname, 'src', 'views');
 
 const app = express();
@@ -9,7 +13,6 @@ const PORT = 3000;
 
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
-
 app.use(express.static(path.join(__dirname, 'src')));
 
 app.use(session({
@@ -19,23 +22,28 @@ app.use(session({
     cookie: { secure: false }
 }));
 
+app.use((req, res, next) => {
+    res.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
+    next();
+});
+
 function requireLogin(req, res, next) {
     if (req.session && req.session.username) {
         return next();
-    }
-    else {
+    } else {
         res.redirect('/loginpage');
     }
 }
 
-function destroySession(session, res) {
-    session.destroy((err) => {
-        if (err) {
-            console.error('Error destroying session:', err);
-            res.json({ success: false });
-        } else {
-            res.json({ success: true });
-        }
+async function destroySession(session) {
+    return new Promise((resolve, reject) => {
+        session.destroy((err) => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve();
+            }
+        });
     });
 }
 
@@ -64,7 +72,6 @@ app.get('/api/user/:username', async (req, res) => {
 
     try {
         const userData = await getUser(username);
-        console.log(`Fetched user data for ${username}:`, userData); // Debugging log
 
         if (!userData) {
             return res.status(404).json({ error: 'User not found' });
@@ -79,7 +86,6 @@ app.get('/api/user/:username', async (req, res) => {
 app.post('/login-attempt', async (req, res) => {
     try {
         const { username, password } = req.body;
-
         const loggedIn = await loginUser(username, password);
 
         if (loggedIn) {
@@ -95,7 +101,6 @@ app.post('/login-attempt', async (req, res) => {
 });
 
 app.post('/register-user', async (req, res) => {
-
     try {
         const { username, fullName, email, password, profileImage } = req.body.userData;
         const userData = {
@@ -103,7 +108,7 @@ app.post('/register-user', async (req, res) => {
             email,
             password,
             profileImage
-        }
+        };
 
         const registerUser = await addUser(username, userData);
 
@@ -116,13 +121,11 @@ app.post('/register-user', async (req, res) => {
         console.error(error);
         res.send({ userCreated: false });
     }
-
 });
 
 app.get('/get-users', async (req, res) => {
     const userInfo = await getAllUsers();
     res.json(userInfo);
-    //console.log(userInfo);
 });
 
 app.get('/get-loggedin-user', async (req, res) => {
@@ -133,25 +136,36 @@ app.get('/get-loggedin-user', async (req, res) => {
 app.get('/get-posts', async (req, res) => {
     const postInfo = await getAllPosts();
     res.json(postInfo);
-    //console.log(postInfo);
 });
 
-app.post('/logout', (req, res) => {
-    destroySession(req.session, res);
+app.post('/logout', async (req, res) => {
+    try {
+        await destroySession(req.session);
+        res.clearCookie('connect.sid');
+        res.json({ success: true });
+    } catch (error) {
+        console.error('Error destroying session:', error);
+        res.json({ success: false });
+    }
 });
 
 app.delete('/delete-user', async (req, res) => {
     const { password, username } = req.body;
-    const userPassword = await getUserPassword();
 
-    if (userPassword === password) {
-        destroySession(req.session, res);
-        deleteUser(username);
+    try {
+        const userPassword = await getUserPassword(username);
 
-        res.json(true);
-    }
-    else {
-        res.json(null);
+        if (userPassword === password) {
+            await destroySession(req.session);
+            await deleteUser(username);
+            res.clearCookie('connect.sid');
+            res.json({ success: true });
+        } else {
+            res.json({ success: false, message: 'Password incorrect' });
+        }
+    } catch (error) {
+        console.error('Error deleting user:', error);
+        res.status(500).json({ success: false, message: 'Server error' });
     }
 });
 

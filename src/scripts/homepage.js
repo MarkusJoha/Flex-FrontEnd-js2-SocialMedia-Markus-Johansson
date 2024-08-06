@@ -1,5 +1,7 @@
 const greeting = document.getElementById('welcome-message');
 const logoutBtn = document.getElementById('logout-button');
+const deleteAccountBtn = document.getElementById('delete-account-button');
+const confirmDeleteBtn = document.getElementById('confirm-delete-button');
 const timelineDiv = document.getElementById('timeline');
 const userLinksDiv = document.getElementById('profile-links');
 let user;
@@ -54,8 +56,28 @@ async function logout() {
     }
 }
 
-function deleteUser() {
-    // Implement delete user functionality if needed
+async function deleteUser() {
+    const passwordInput = document.getElementById('password-input').value;
+    try {
+        const response = await fetch('/delete-user', {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ password: passwordInput, username: user })
+        });
+        const data = await response.json();
+        console.log('Server response:', data); 
+
+        if (data.success) {
+            alert('User has been deleted!');
+            window.location.href = '/loginpage';
+        } else {
+            alert('Password incorrect. Please try again.');
+        }
+    } catch (error) {
+        console.error(error);
+    }
 }
 
 function formatDate(dateString) {
@@ -136,7 +158,6 @@ function displayUserLinks(userData) {
         const userLink = document.createElement('a');
         userLink.href = `/profilepage?username=${encodeURIComponent(username)}`;
         userLink.textContent = username;
-        userLink.style.display = 'block'; // Add some basic styling
         userLinksDiv.appendChild(userLink);
     }
 }
@@ -145,3 +166,4 @@ fetchData();
 getLoggedInUser();
 
 logoutBtn.addEventListener('click', logout);
+confirmDeleteBtn.addEventListener('click', deleteUser);

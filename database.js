@@ -17,7 +17,7 @@ async function loginUser(username, password) {
 
 function deleteUser(username) {
   try {
-    fetch(`${baseUrl}user/${username}.json`, {
+    fetch(`${baseUrl}users/${username}.json`, {
       method: "DELETE",
       headers: {
         "Content-type": "application/json; charset=UTF-8"

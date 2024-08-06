@@ -1,16 +1,16 @@
 {
   "users": {
     "username_1": {
-      "fullname": "Test One",
+      "fullName": "Test One",
       "email": "test1@example.com",
       "password": "testone",
-      "profileimage": "../img/sanguinius.jpg"
+      "profileImage": "../img/sanguinius.jpg"
     },
     "username_2": {
-      "fullname": "Test Two",
+      "fullName": "Test Two",
       "email": "test2@example.com",
       "password": "testtwo",
-      "profileimage": "../img/emperor.jpg"
+      "profileImage": "../img/emperor.jpg"
     }
   },
   "posts": {

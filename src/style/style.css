@@ -225,3 +225,13 @@ input[type="radio"] + label {
 .comment-form button:hover {
     background-color: #0056b3;
 }
+
+#profile-page-top {
+    text-align: center;
+    padding-top: 24px;
+    padding-bottom: 24px;
+}
+
+#homepage-button {
+    border-radius: 10px;
+}

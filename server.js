@@ -138,6 +138,73 @@ app.get('/get-posts', async (req, res) => {
     res.json(postInfo);
 });
 
+app.get('/get-user-posts/:username', async (req, res) => {
+    const username = req.params.username;
+
+    try {
+        const postInfo = await getUserPosts(username);
+        if (!postInfo) {
+            return res.status(404).json({ error: 'Posts not found' });
+        }
+        res.json(postInfo);
+    } catch (error) {
+        console.error(`Error fetching posts for ${username}:`, error);
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
+// Server-side (Express.js)
+app.post('/add-post', async (req, res) => {
+    try {
+        const { username, content } = req.body;
+        const created_at = new Date().toISOString();
+
+        // Save the post to the database
+        const newPost = {
+            user: username,
+            content: content,
+            created_at: created_at,
+            comments: {}
+        };
+
+        // Assuming you have a function to save the post
+        await addPost(username, newPost);
+
+        res.json({
+            success: true,
+            postData: {
+                user: username,
+                post: newPost,
+                created_at: created_at
+            }
+        });
+    } catch (error) {
+        console.error('Error adding post:', error);
+        res.json({ success: false, error: 'Failed to add post' });
+    }
+});
+
+
+// New endpoint to handle comment submissions
+app.post('/add-comment', requireLogin, async (req, res) => {
+    const { username } = req.session;
+    const { postId, postOwner, content } = req.body;
+    const date = new Date().toISOString(); // current date and time
+
+    try {
+        const commentData = await addComment(username, postId, postOwner, content, date);
+
+        if (commentData) {
+            res.json({ success: true, commentData });
+        } else {
+            res.status(500).json({ success: false, error: 'Failed to add comment' });
+        }
+    } catch (error) {
+        console.error('Error adding comment:', error);
+        res.status(500).json({ success: false, error: 'Server error' });
+    }
+});
+
 app.post('/logout', async (req, res) => {
     try {
         await destroySession(req.session);

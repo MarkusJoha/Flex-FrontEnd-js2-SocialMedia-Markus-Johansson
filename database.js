@@ -1,5 +1,9 @@
 const baseUrl = 'https://social-media-app-8f2ed-default-rtdb.europe-west1.firebasedatabase.app/';
 
+function generateUniqueId() {
+  return `${Date.now()}_${Math.floor(Math.random() * 10000)}`;
+}
+
 async function loginUser(username, password) {
   try {
     const res = await fetch(`${baseUrl}users/${username}.json`);
@@ -63,18 +67,20 @@ async function addUser(username, userData) {
 
 async function addPost(username, content, date) {
   try {
-    const addPost = await fetch(`${baseUrl}posts/${username}.json`, {
-      method: "PUT",
-      body: JSON.stringify(
-        content, date
-      ),
+    const postId = generateUniqueId(); // Generate a unique ID
+    const response = await fetch(`${baseUrl}posts/${username}/${postId}.json`, {
+      method: 'PUT',
+      body: JSON.stringify({
+        content,
+        created_at: date
+      }),
       headers: {
-        "Content-type": "application/json; charset=UTF-8"
+        'Content-Type': 'application/json; charset=UTF-8'
       }
     });
-
-    const data = await addPost.json();
-    return data;
+    
+    const data = await response.json();
+    return postId; // Return the unique post ID
   } catch (error) {
     console.error(error);
     return null;
@@ -83,18 +89,21 @@ async function addPost(username, content, date) {
 
 async function addComment(username, postId, postOwner, content, date) {
   try {
-    const addComment = await fetch(`${baseUrl}posts/${postOwner}/${postId}/comments.json`, {
-      method: "PUT",
-      body: JSON.stringify(
-        content, date, username
-      ),
+    const commentId = generateUniqueId(); // Generate a unique ID
+    const response = await fetch(`${baseUrl}posts/${postOwner}/${postId}/comments/${commentId}.json`, {
+      method: 'PUT',
+      body: JSON.stringify({
+        content,
+        created_at: date,
+        user: username
+      }),
       headers: {
-        "Content-type": "application/json; charset=UTF-8"
+        'Content-Type': 'application/json; charset=UTF-8'
       }
     });
 
-    const data = await addComment.json();
-    return data;
+    const data = await response.json();
+    return commentId; // Return the unique comment ID
   } catch (error) {
     console.error(error);
     return null;

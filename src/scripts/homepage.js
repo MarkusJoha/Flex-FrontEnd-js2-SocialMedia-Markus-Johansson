@@ -4,7 +4,19 @@ const deleteAccountBtn = document.getElementById('delete-account-button');
 const confirmDeleteBtn = document.getElementById('confirm-delete-button');
 const timelineDiv = document.getElementById('timeline');
 const userLinksDiv = document.getElementById('profile-links');
+const postForm = document.getElementById('post-submission-form');
 let user;
+
+function formatDateToMinute(dateString) {
+    const date = new Date(dateString);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const hour = String(date.getHours()).padStart(2, '0');
+    const minute = String(date.getMinutes()).padStart(2, '0');
+    
+    return `${year}-${month}-${day} ${hour}:${minute}`;
+}
 
 async function fetchData() {
     try {
@@ -80,9 +92,77 @@ async function deleteUser() {
     }
 }
 
-function formatDate(dateString) {
-    const date = new Date(dateString);
-    return date.toLocaleString();
+// Add this function to handle form submission for new posts
+async function addPost(postContent) {
+    try {
+        const response = await fetch('/add-post', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                username: user,
+                content: postContent
+            })
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to add post');
+        }
+
+        const data = await response.json();
+        if (data.success) {
+            console.log('Post added successfully:', data.postData);
+            // Create a new post element and add it to the timeline
+            const newPostElement = createPostElement(data.postData.user, data.postData.post, formatDateToMinute(data.postData.created_at));
+            timelineDiv.insertBefore(newPostElement, timelineDiv.firstChild);
+        } else {
+            console.error('Error adding post:', data.error);
+        }
+    } catch (error) {
+        console.error('Error adding post:', error);
+    }
+}
+
+// Attach event listener to the post form
+postForm.addEventListener('submit', function(event) {
+    event.preventDefault();
+    const postContent = document.getElementById('post-submission-input').value;
+    if (postContent) {
+        addPost(postContent);
+        event.target.reset();
+    }
+});
+
+async function postComment(postId, commentContent, postElement) {
+    try {
+        const response = await fetch('/add-comment', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                postId,
+                username: user,
+                content: commentContent
+            })
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to post comment');
+        }
+
+        const data = await response.json();
+        if (data.success) {
+            console.log('Comment added successfully:', data.commentData);
+            const newCommentElement = createCommentElement(data.commentData);
+            postElement.appendChild(newCommentElement);
+        } else {
+            console.error('Error adding comment:', data.error);
+        }
+    } catch (error) {
+        console.error('Error adding comment:', error);
+    }
 }
 
 function createPostElement(user, post, timestamp) {
@@ -111,7 +191,7 @@ function createPostElement(user, post, timestamp) {
         event.preventDefault();
         const commentContent = event.target.comment.value;
         if (commentContent) {
-            postComment(user, post, commentContent, postElement);
+            postComment(post.id, commentContent, postElement);
             event.target.reset();
         }
     });
@@ -125,7 +205,7 @@ function createCommentElement(comment) {
     commentElement.className = 'comment';
 
     const commentContent = document.createElement('p');
-    commentContent.textContent = `${comment.user} (${formatDate(comment.created_at)}): ${comment.content}`;
+    commentContent.textContent = `${comment.user} (${formatDateToMinute(comment.created_at)}): ${comment.content}`;
     commentElement.appendChild(commentContent);
 
     return commentElement;
@@ -140,7 +220,8 @@ function displayPosts(postData) {
             postsArray.push({
                 user: user,
                 post: post,
-                created_at: post.created_at
+                created_at: post.created_at,
+                id: postId // Add the post ID to the posts array
             });
         }
     }
@@ -148,7 +229,7 @@ function displayPosts(postData) {
     postsArray.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
 
     for (const postObject of postsArray) {
-        const postElement = createPostElement(postObject.user, postObject.post, formatDate(postObject.created_at));
+        const postElement = createPostElement(postObject.user, postObject.post, formatDateToMinute(postObject.created_at));
         timelineDiv.appendChild(postElement);
     }
 }

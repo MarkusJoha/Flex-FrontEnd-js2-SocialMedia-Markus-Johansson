@@ -194,9 +194,10 @@ input[type="radio"] + label {
 
 .comment {
     border-top: 1px solid #ced4da;
+    border-radius: 5px;
     padding: 10px;
     margin-top: 10px;
-    background-color: #f8f9fa;
+    background-color: #d4d4d4;
 }
 
 .comment-form {
@@ -234,4 +235,10 @@ input[type="radio"] + label {
 
 #homepage-button {
     border-radius: 10px;
+}
+
+#profile-page-content {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
 }

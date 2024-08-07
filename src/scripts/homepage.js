@@ -153,6 +153,8 @@ async function postComment(postId, commentContent, postElement) {
         }
 
         const data = await response.json();
+        console.log(data);
+        
         if (data.success) {
             console.log('Comment added successfully:', data.commentData);
             const newCommentElement = createCommentElement(data.commentData);

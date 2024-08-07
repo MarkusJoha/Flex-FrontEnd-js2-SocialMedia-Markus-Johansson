@@ -164,11 +164,12 @@ app.post('/add-post', async (req, res) => {
             user: username,
             content: content,
             created_at: created_at,
-            comments: {}
         };
+        console.log(newPost);
+        
 
         // Assuming you have a function to save the post
-        await addPost(username, newPost);
+        await addPost(newPost);
 
         res.json({
             success: true,

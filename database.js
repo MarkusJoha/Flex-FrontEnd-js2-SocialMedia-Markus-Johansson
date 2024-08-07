@@ -1,9 +1,5 @@
 const baseUrl = 'https://social-media-app-8f2ed-default-rtdb.europe-west1.firebasedatabase.app/';
 
-function generateUniqueId() {
-  return `${Date.now()}_${Math.floor(Math.random() * 10000)}`;
-}
-
 async function loginUser(username, password) {
   try {
     const res = await fetch(`${baseUrl}users/${username}.json`);
@@ -65,22 +61,20 @@ async function addUser(username, userData) {
   return null;
 }
 
-async function addPost(username, content, date) {
+async function addPost(content) {
   try {
-    const postId = generateUniqueId(); // Generate a unique ID
-    const response = await fetch(`${baseUrl}posts/${username}/${postId}.json`, {
-      method: 'PUT',
-      body: JSON.stringify({
-        content,
-        created_at: date
-      }),
+    const response = await fetch(`${baseUrl}posts/${content.user}/.json`, {
+      method: 'POST',
+      body: JSON.stringify(content),
       headers: {
         'Content-Type': 'application/json; charset=UTF-8'
       }
     });
     
     const data = await response.json();
-    return postId; // Return the unique post ID
+    console.log(data);
+    
+    return data.name; // Return the unique post ID
   } catch (error) {
     console.error(error);
     return null;

@@ -46,7 +46,6 @@ async function getLoggedInUser() {
         const data = await response.json();
         user = data.username;
         greeting.innerText = `Greetings, ${user}!`;
-        console.log(user);
     } catch (error) {
         console.error(error);
     }
@@ -93,11 +92,6 @@ async function deleteUser() {
 }
 
 async function addPost(postContent) {
-    const postObj = {
-        username: user,
-        content: postContent
-    };
-
     try {
         const response = await fetch('/add-post', {
             method: 'POST',
@@ -115,7 +109,6 @@ async function addPost(postContent) {
         }
 
         const data = await response.json();
-        console.log(data);
         
         if (data.success) {
             console.log('Post added successfully:', data.postData);
@@ -138,7 +131,9 @@ postForm.addEventListener('submit', function (event) {
     }
 });
 
-async function postComment(postId, commentContent, postElement) {
+async function postComment(post, commentContent, postElement) {
+    console.log(post);
+    
     try {
         const response = await fetch('/add-comment', {
             method: 'POST',
@@ -146,8 +141,8 @@ async function postComment(postId, commentContent, postElement) {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                postId,
-                username: user,
+                postId: post.id,
+                postOwner: post.user,
                 content: commentContent
             })
         });
@@ -157,7 +152,6 @@ async function postComment(postId, commentContent, postElement) {
         }
 
         const data = await response.json();
-        console.log(data);
 
         if (data.success) {
             console.log('Comment added successfully:', data.commentData);
@@ -176,7 +170,6 @@ function createPostElement(post) {
     postElement.className = 'post';
 
     const postContent = document.createElement('p');
-    console.log(post);
 
     postContent.textContent = `${post.user} (${formatDateToMinute(post.created_at)}): ${post.post}`;
     postElement.appendChild(postContent);
@@ -198,10 +191,9 @@ function createPostElement(post) {
     commentForm.addEventListener('submit', function (event) {
         event.preventDefault();
         const commentContent = event.target.comment.value;
-        console.log('postElement: ', postElement, 'commentContent: ', commentContent, 'post: ', post);
 
         if (commentContent) {
-            postComment(post.id, commentContent, postElement);
+            postComment(post, commentContent, postElement);
             event.target.reset();
         }
     });
@@ -231,7 +223,8 @@ function displayPosts(postData) {
                 user: user,
                 post: post.content,
                 created_at: post.created_at,
-                id: postId
+                id: postId,
+                comments: post.comments
             });
         }
     }
@@ -240,7 +233,6 @@ function displayPosts(postData) {
 
     for (const postObject of postsArray) {
         const postElement = createPostElement(postObject);
-        console.log(postObject.id);
 
         timelineDiv.appendChild(postElement);
     }

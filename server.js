@@ -164,13 +164,14 @@ app.post('/add-post', async (req, res) => {
             created_at: created_at,
         };
         
-        await addPost(newPost);
+        const postId = await addPost(newPost);
 
         res.json({
             success: true,
             postData: {
                 user: username,
-                post: newPost,
+                id: postId,
+                post: content,
                 created_at: created_at
             }
         });

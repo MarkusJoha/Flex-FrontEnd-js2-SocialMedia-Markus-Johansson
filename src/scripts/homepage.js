@@ -93,6 +93,11 @@ async function deleteUser() {
 }
 
 async function addPost(postContent) {
+    const postObj = {
+        username: user,
+        content: postContent
+    };
+
     try {
         const response = await fetch('/add-post', {
             method: 'POST',
@@ -110,9 +115,11 @@ async function addPost(postContent) {
         }
 
         const data = await response.json();
+        console.log(data);
+        
         if (data.success) {
             console.log('Post added successfully:', data.postData);
-            const newPostElement = createPostElement(data.postData.user, data.postData.post, formatDateToMinute(data.postData.created_at));
+            const newPostElement = createPostElement(data.postData);
             timelineDiv.insertBefore(newPostElement, timelineDiv.firstChild);
         } else {
             console.error('Error adding post:', data.error);

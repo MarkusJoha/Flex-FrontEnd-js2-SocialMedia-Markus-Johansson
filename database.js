@@ -63,7 +63,9 @@ async function addUser(username, userData) {
 
 async function addPost(content) {
   try {
-    const response = await fetch(`${baseUrl}posts/${content.user}/.json`, {
+    const user = content.user;
+    delete content.user;
+    const response = await fetch(`${baseUrl}posts/${user}/.json`, {
       method: 'POST',
       body: JSON.stringify(content),
       headers: {

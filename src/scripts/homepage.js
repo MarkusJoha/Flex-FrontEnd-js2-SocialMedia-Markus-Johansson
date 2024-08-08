@@ -14,7 +14,7 @@ function formatDateToMinute(dateString) {
     const day = String(date.getDate()).padStart(2, '0');
     const hour = String(date.getHours()).padStart(2, '0');
     const minute = String(date.getMinutes()).padStart(2, '0');
-    
+
     return `${year}-${month}-${day} ${hour}:${minute}`;
 }
 
@@ -79,7 +79,7 @@ async function deleteUser() {
             body: JSON.stringify({ password: passwordInput, username: user })
         });
         const data = await response.json();
-        console.log('Server response:', data); 
+        console.log('Server response:', data);
 
         if (data.success) {
             alert('User has been deleted!');
@@ -122,7 +122,7 @@ async function addPost(postContent) {
     }
 }
 
-postForm.addEventListener('submit', function(event) {
+postForm.addEventListener('submit', function (event) {
     event.preventDefault();
     const postContent = document.getElementById('post-submission-input').value;
     if (postContent) {
@@ -151,7 +151,7 @@ async function postComment(postId, commentContent, postElement) {
 
         const data = await response.json();
         console.log(data);
-        
+
         if (data.success) {
             console.log('Comment added successfully:', data.commentData);
             const newCommentElement = createCommentElement(data.commentData);
@@ -164,12 +164,14 @@ async function postComment(postId, commentContent, postElement) {
     }
 }
 
-function createPostElement(user, post, timestamp) {
+function createPostElement(post) {
     const postElement = document.createElement('div');
     postElement.className = 'post';
 
     const postContent = document.createElement('p');
-    postContent.textContent = `${user} (${timestamp}): ${post.content}`;
+    console.log(post);
+
+    postContent.textContent = `${post.user} (${formatDateToMinute(post.created_at)}): ${post.post}`;
     postElement.appendChild(postContent);
 
     if (post.comments) {
@@ -186,9 +188,11 @@ function createPostElement(user, post, timestamp) {
         <input type="text" name="comment" placeholder="Write a comment..." required>
         <button type="submit">Post Comment</button>
     `;
-    commentForm.addEventListener('submit', function(event) {
+    commentForm.addEventListener('submit', function (event) {
         event.preventDefault();
         const commentContent = event.target.comment.value;
+        console.log('postElement: ', postElement, 'commentContent: ', commentContent, 'post: ', post);
+
         if (commentContent) {
             postComment(post.id, commentContent, postElement);
             event.target.reset();
@@ -218,9 +222,9 @@ function displayPosts(postData) {
             const post = postData[user][postId];
             postsArray.push({
                 user: user,
-                post: post,
+                post: post.content,
                 created_at: post.created_at,
-                id: postId 
+                id: postId
             });
         }
     }
@@ -228,7 +232,9 @@ function displayPosts(postData) {
     postsArray.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
 
     for (const postObject of postsArray) {
-        const postElement = createPostElement(postObject.user, postObject.post, formatDateToMinute(postObject.created_at));
+        const postElement = createPostElement(postObject);
+        console.log(postObject.id);
+
         timelineDiv.appendChild(postElement);
     }
 }

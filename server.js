@@ -187,9 +187,11 @@ app.post('/add-comment', requireLogin, async (req, res) => {
     const date = new Date().toISOString();
 
     try {
-        const commentData = await addComment(username, postId, postOwner, content, date);
+        const commentData = { 
+            name: await addComment(username, postId, postOwner, content, date),
+            user: username
+        };
         console.log(commentData);
-        
 
         if (commentData) {
             res.json({ success: true, commentData });

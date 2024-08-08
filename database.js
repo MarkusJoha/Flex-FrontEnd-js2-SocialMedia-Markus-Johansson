@@ -99,7 +99,7 @@ async function addComment(username, postId, postOwner, content, date) {
     const data = await response.json();
     console.log(data);
     
-    return 'cool';
+    return data.name;
   } catch (error) {
     console.error(error);
     return null;

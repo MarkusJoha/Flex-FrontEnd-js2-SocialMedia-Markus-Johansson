@@ -109,7 +109,7 @@ async function addPost(postContent) {
         }
 
         const data = await response.json();
-        
+
         if (data.success) {
             console.log('Post added successfully:', data.postData);
             const newPostElement = createPostElement(data.postData);
@@ -131,9 +131,8 @@ postForm.addEventListener('submit', function (event) {
     }
 });
 
-async function postComment(post, commentContent, postElement) {
-    console.log(post);
-    
+async function postComment(post, comment, postElement) {
+
     try {
         const response = await fetch('/add-comment', {
             method: 'POST',
@@ -143,7 +142,7 @@ async function postComment(post, commentContent, postElement) {
             body: JSON.stringify({
                 postId: post.id,
                 postOwner: post.user,
-                content: commentContent
+                content: comment.content
             })
         });
 
@@ -152,10 +151,15 @@ async function postComment(post, commentContent, postElement) {
         }
 
         const data = await response.json();
+        comment.id = data.commentData.name;
+        comment.user = data.commentData.user;
+        console.log(comment);
+        
+        console.log(data);
 
         if (data.success) {
             console.log('Comment added successfully:', data.commentData);
-            const newCommentElement = createCommentElement(data.commentData);
+            const newCommentElement = createCommentElement(comment);
             postElement.appendChild(newCommentElement);
         } else {
             console.error('Error adding comment:', data.error);
@@ -190,10 +194,14 @@ function createPostElement(post) {
     `;
     commentForm.addEventListener('submit', function (event) {
         event.preventDefault();
-        const commentContent = event.target.comment.value;
 
-        if (commentContent) {
-            postComment(post, commentContent, postElement);
+        const comment = { 
+            content: event.target.comment.value, 
+            created_at: new Date()
+        };
+
+        if (comment.content) {
+            postComment(post, comment, postElement);
             event.target.reset();
         }
     });

@@ -92,7 +92,6 @@ async function deleteUser() {
     }
 }
 
-// Add this function to handle form submission for new posts
 async function addPost(postContent) {
     try {
         const response = await fetch('/add-post', {
@@ -113,7 +112,6 @@ async function addPost(postContent) {
         const data = await response.json();
         if (data.success) {
             console.log('Post added successfully:', data.postData);
-            // Create a new post element and add it to the timeline
             const newPostElement = createPostElement(data.postData.user, data.postData.post, formatDateToMinute(data.postData.created_at));
             timelineDiv.insertBefore(newPostElement, timelineDiv.firstChild);
         } else {
@@ -124,7 +122,6 @@ async function addPost(postContent) {
     }
 }
 
-// Attach event listener to the post form
 postForm.addEventListener('submit', function(event) {
     event.preventDefault();
     const postContent = document.getElementById('post-submission-input').value;
@@ -223,7 +220,7 @@ function displayPosts(postData) {
                 user: user,
                 post: post,
                 created_at: post.created_at,
-                id: postId // Add the post ID to the posts array
+                id: postId 
             });
         }
     }

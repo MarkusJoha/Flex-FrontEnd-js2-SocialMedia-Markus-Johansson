@@ -72,9 +72,8 @@ async function addPost(content) {
     });
     
     const data = await response.json();
-    console.log(data);
     
-    return data.name; // Return the unique post ID
+    return data.name;
   } catch (error) {
     console.error(error);
     return null;
@@ -83,9 +82,8 @@ async function addPost(content) {
 
 async function addComment(username, postId, postOwner, content, date) {
   try {
-    const commentId = generateUniqueId(); // Generate a unique ID
-    const response = await fetch(`${baseUrl}posts/${postOwner}/${postId}/comments/${commentId}.json`, {
-      method: 'PUT',
+    const response = await fetch(`${baseUrl}posts/${postOwner}/${postId}/comments/.json`, {
+      method: 'POST',
       body: JSON.stringify({
         content,
         created_at: date,
@@ -97,7 +95,9 @@ async function addComment(username, postId, postOwner, content, date) {
     });
 
     const data = await response.json();
-    return commentId; // Return the unique comment ID
+    console.log(data);
+    
+    return 'cool';
   } catch (error) {
     console.error(error);
     return null;

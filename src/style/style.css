@@ -86,7 +86,7 @@ header > a {
 #registration-form label {
     margin-top: 15px;
     text-align: center;
-    display: block; /* Make labels take full width */
+    display: block;
 }
 
 #registration-image-container {

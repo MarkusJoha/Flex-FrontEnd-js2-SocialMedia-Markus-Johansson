@@ -153,22 +153,17 @@ app.get('/get-user-posts/:username', async (req, res) => {
     }
 });
 
-// Server-side (Express.js)
 app.post('/add-post', async (req, res) => {
     try {
         const { username, content } = req.body;
         const created_at = new Date().toISOString();
 
-        // Save the post to the database
         const newPost = {
             user: username,
             content: content,
             created_at: created_at,
         };
-        console.log(newPost);
         
-
-        // Assuming you have a function to save the post
         await addPost(newPost);
 
         res.json({
@@ -185,15 +180,15 @@ app.post('/add-post', async (req, res) => {
     }
 });
 
-
-// New endpoint to handle comment submissions
 app.post('/add-comment', requireLogin, async (req, res) => {
     const { username } = req.session;
     const { postId, postOwner, content } = req.body;
-    const date = new Date().toISOString(); // current date and time
+    const date = new Date().toISOString();
 
     try {
         const commentData = await addComment(username, postId, postOwner, content, date);
+        console.log(commentData);
+        
 
         if (commentData) {
             res.json({ success: true, commentData });

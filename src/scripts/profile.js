@@ -1,7 +1,6 @@
 const homepageButton = document.getElementById('homepage-button');
 const logoutBtn = document.getElementById('logout-button');
 
-// Function to format date to 'YYYY-MM-DD HH:MM'
 function formatDateToMinute(dateString) {
     const date = new Date(dateString);
     const year = date.getFullYear();
@@ -56,7 +55,7 @@ async function fetchUserProfile() {
             document.getElementById('profile-info').innerText = 'User not found';
         } else {
             displayUserProfile(userData, username);
-            fetchUserPosts(username); // Fetch posts for the specific user
+            fetchUserPosts(username);
         }
     } catch (error) {
         console.error('Error fetching user data:', error);
@@ -78,7 +77,7 @@ async function fetchUserPosts(username) {
     try {
         const response = await fetch(`/get-user-posts/${username}`);
         if (response.status === 404) {
-            displayUserPosts(null, username); // No posts for this user
+            displayUserPosts(null, username);
             return;
         }
         if (!response.ok) {
@@ -137,12 +136,11 @@ function displayUserPosts(postData, username) {
             </div>
         `;
 
-        // Handle form submission
         commentForm.onsubmit = async (event) => {
             event.preventDefault();
             const commentInput = event.target.elements.comment.value;
             await addComment(username, postId, commentInput);
-            fetchUserPosts(username); // Refresh posts to show the new comment
+            fetchUserPosts(username);
         };
 
         postElement.appendChild(commentForm);
@@ -151,7 +149,6 @@ function displayUserPosts(postData, username) {
     }
 }
 
-// Placeholder function to simulate adding a comment
 async function addComment(username, postId, content) {
     try {
         const response = await fetch('/add-comment', {
@@ -177,5 +174,4 @@ async function addComment(username, postId, content) {
     }
 }
 
-// Fetch and display user profile and posts on page load
 fetchUserProfile();

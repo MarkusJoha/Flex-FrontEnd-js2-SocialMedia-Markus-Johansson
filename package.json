@@ -5,7 +5,7 @@
   "scripts": {
     "start": "node server.js",
     "dev": "nodemon server.js",
-    "build": "parcel build ./src/index.html --dist-dir docs --public-url ./",
+    "build": "parcel build ./src/views/loginpage.html --dist-dir docs --public-url ./",
     "clean": "del-cli ./.parcel-cache ./docs ./dist"
   },
   "keywords": [],

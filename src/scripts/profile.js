@@ -66,7 +66,7 @@ async function fetchUserProfile() {
 function displayUserProfile(userData, username) {
     const profileInfoDiv = document.getElementById('profile-info');
     profileInfoDiv.innerHTML = `
-        <img src="${userData.profileImage}" alt="Profile Image" />
+        <img src="${userData.profileImage}" alt="Profile Image" class="profile-image" />
         <p><strong>Username:</strong> ${username}</p>
         <p><strong>Full Name:</strong> ${userData.fullName}</p>
         <p><strong>Email:</strong> ${userData.email}</p>

@@ -1,5 +1,9 @@
 const homepageButton = document.getElementById('homepage-button');
 const logoutBtn = document.getElementById('logout-button');
+const deleteAccountBtn = document.getElementById('delete-account-button');
+const confirmDeleteBtn = document.getElementById('confirm-delete-button');
+let user;
+let username;
 
 function formatDateToMinute(dateString) {
     const date = new Date(dateString);
@@ -10,6 +14,17 @@ function formatDateToMinute(dateString) {
     const minute = String(date.getMinutes()).padStart(2, '0');
     
     return `${year}-${month}-${day} ${hour}:${minute}`;
+}
+
+async function getLoggedInUser() {
+    try {
+        const response = await fetch('/get-loggedin-user');
+        const data = await response.json();
+        user = data.username;
+        console.log(user);
+    } catch (error) {
+        console.error(error);
+    }
 }
 
 homepageButton.addEventListener('click', async () => {
@@ -38,11 +53,36 @@ async function logout() {
     }
 }
 
+async function deleteUser() {
+    const passwordInput = document.getElementById('password-input').value;
+    try {
+        const response = await fetch('/delete-user', {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ password: passwordInput, username: user })
+        });
+        const data = await response.json();
+        console.log('Server response:', data);
+
+        if (data.success) {
+            alert('User has been deleted!');
+            window.location.href = '/loginpage';
+        } else {
+            alert('Password incorrect. Please try again.');
+        }
+    } catch (error) {
+        console.error(error);
+    }
+}
+
 logoutBtn.addEventListener('click', logout);
 
 async function fetchUserProfile() {
+
     const params = new URLSearchParams(window.location.search);
-    const username = params.get('username');
+    username = params.get('username');
 
     try {
         const response = await fetch(`/api/user/${username}`);
@@ -71,6 +111,15 @@ function displayUserProfile(userData, username) {
         <p><strong>Full Name:</strong> ${userData.fullName}</p>
         <p><strong>Email:</strong> ${userData.email}</p>
     `;
+}
+
+async function disableDeleteButton() {
+    console.log('user page: ' + username, 'logged in: ' + user);
+    
+
+    if (username != user) {
+        deleteAccountBtn.hidden = true;
+    }
 }
 
 async function fetchUserPosts(username) {
@@ -174,4 +223,11 @@ async function addComment(username, postId, content) {
     }
 }
 
-fetchUserProfile();
+async function startUp() {
+    await fetchUserProfile();
+    await getLoggedInUser();
+    await disableDeleteButton();   
+}
+
+startUp();
+confirmDeleteBtn.addEventListener('click', deleteUser);
